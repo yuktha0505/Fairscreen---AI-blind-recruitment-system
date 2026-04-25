@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FairScreen — Bias-Free Hiring</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a38;
+    --primary: #4f8ef7;
+    --primary-dim: rgba(79,142,247,0.12);
+    --accent: #34d399;
+    --accent-dim: rgba(52,211,153,0.12);
+    --danger: #f87171;
+    --danger-dim: rgba(248,113,113,0.12);
+    --warning: #fbbf24;
+    --text: #e8e8f0;
+    --text-dim: #8888a8;
+    --text-faint: #44445a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 32px;
+    text-align: center;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .logo-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .tagline {
+    font-size: 15px;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  .sdg-badges {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .badge-blue { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(79,142,247,0.2); }
+  .badge-green { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(52,211,153,0.2); }
+  .badge-red { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: rgba(79,142,247,0.3); }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  /* Form elements */
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 14px 16px;
+    resize: vertical;
+    min-height: 160px;
+    transition: border-color 0.2s;
+    outline: none;
+    line-height: 1.6;
+  }
+
+  textarea:focus { border-color: var(--primary); }
+
+  /* File upload */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: var(--surface2);
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--primary);
+    background: var(--primary-dim);
+  }
+
+  .upload-zone input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 32px; margin-bottom: 10px; }
+
+  .upload-text {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .upload-text strong { color: var(--primary); }
+
+  .file-list {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .file-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-chip span { color: var(--accent); }
+
+  /* Button */
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: #3a7de8; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { color: var(--text-dim); font-size: 14px; }
+
+  /* Results */
+  #results { display: none; }
+
+  /* JD Audit */
+  .bias-meter {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .bias-score {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  .bias-score.good { color: var(--accent); }
+  .bias-score.medium { color: var(--warning); }
+  .bias-score.bad { color: var(--danger); }
+
+  .bias-bar-wrap {
+    flex: 1;
+  }
+
+  .bias-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .bias-bar {
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bias-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+
+  .bias-fill.good { background: var(--accent); }
+  .bias-fill.medium { background: var(--warning); }
+  .bias-fill.bad { background: var(--danger); }
+
+  /* Issues */
+  .issue-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--danger-dim);
+    border: 1px solid rgba(248,113,113,0.15);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .issue-type {
+    font-weight: 600;
+    color: var(--danger);
+    white-space: nowrap;
+  }
+
+  .issue-suggestion { color: var(--text-dim); }
+
+  /* Candidates */
+  .candidate-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    animation: slideIn 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .candidate-card:hover { border-color: rgba(79,142,247,0.3); }
+  .candidate-card.shortlisted { border-left: 3px solid var(--accent); }
+  .candidate-card.rejected { border-left: 3px solid var(--danger); }
+
+  .candidate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .candidate-rank {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--primary);
+  }
+
+  .candidate-id {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .status-shortlisted {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid rgba(52,211,153,0.3);
+  }
+
+  .status-rejected {
+    background: var(--danger-dim);
+    color: var(--danger);
+    border: 1px solid rgba(248,113,113,0.3);
+  }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .score-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .score-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--primary);
+  }
+
+  .score-label {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .skills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .skill-tag {
+    background: var(--primary-dim);
+    color: var(--primary);
+    border: 1px solid rgba(79,142,247,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .gap-flag {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(251,191,36,0.1);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--warning);
+  }
+
+  /* Summary bar */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .summary-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .summary-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--text);
+  }
+
+  .summary-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-faint);
+    font-size: 12px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .score-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-bar { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="loginSection" style="
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; position:fixed; inset:0;
+  background:var(--bg); z-index:100;
+">
+  <div style="
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:40px; width:100%; max-width:400px;
+  ">
+    <div style="text-align:center; margin-bottom:28px;">
+      <div style="font-size:32px; margin-bottom:8px;">⚖️</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:22px; color:var(--text)">FairScreen</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:4px">HR Portal Login</div>
+    </div>
+
+    <label>Email</label>
+    <input type="email" id="loginEmail" placeholder="hr@company.com" style="
+      width:100%; background:var(--surface2); border:1px solid var(--border);
+      border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif;
+      font-size:14px; padding:12px 16px; margin-bottom:14px; outline:none;
+      box-sizing:border-box;
+    ">
+
+    <label>Password</label>
+    <input type="password" id="loginPassword" placeholder="••••••••" style="
+      width:100%; background:var(--surface2); border:1px solid var(--border);
+      border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif;
+      font-size:14px; padding:12px 16px; margin-bottom:6px; outline:none;
+      box-sizing:border-box;
+    ">
+
+    <div id="loginError" style="color:var(--danger); font-size:12px; margin-bottom:14px; min-height:16px;"></div>
+
+    <button onclick="handleLogin()" style="
+      width:100%; padding:14px; background:var(--primary); color:white;
+      border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+      font-size:15px; font-weight:600; cursor:pointer;
+    ">Sign In</button>
+  </div>
+</div>
+
+<!-- User info bar -->
+<div style="
+  position:fixed; top:16px; right:24px; z-index:50;
+  display:flex; align-items:center; gap:12px;
+">
+  <span id="userEmail" style="font-size:12px; color:var(--text-dim);"></span>
+  <button id="logoutBtn" onclick="handleLogout()" style="
+    display:none; padding:6px 14px; background:var(--surface2);
+    border:1px solid var(--border); border-radius:8px; color:var(--text-dim);
+    font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif;
+  ">Sign Out</button>
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚖️</div>
+      <span class="logo-text">FairScreen</span>
+    </div>
+    <p class="tagline">AI-Powered Blind Recruitment & Bias Auditing System</p>
+    
+  </header>
+
+  <!-- Input Form -->
+  <div id="inputSection">
+
+    <!-- JD Input -->
+    <div class="card">
+      <div class="card-title">📋 Job Description</div>
+      <div class="card-subtitle">Paste the job description. FairScreen will audit it for bias before screening begins.</div>
+      <label>Job Description Text</label>
+      <textarea id="jdText" placeholder="We are looking for a Software Engineering Intern...
+
+Requirements:
+- Strong knowledge of Python and SQL
+- Experience with REST APIs
+- Familiarity with Git and Linux
+- Machine Learning knowledge preferred"></textarea>
+    </div>
+
+    <!-- Resume Upload -->
+    <div class="card">
+      <div class="card-title">📄 Upload Resumes</div>
+      <div class="card-subtitle">Upload one or more PDF resumes. All demographic information is stripped before scoring.</div>
+      <label>Resume PDFs</label>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="resumeFiles" multiple accept=".pdf" onchange="handleFiles(this)">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">
+          <strong>Click to upload</strong> or drag and drop<br>
+          PDF files only — batch upload supported
+        </div>
+      </div>
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-primary" onclick="runFairScreen()" id="submitBtn">
+      ⚖️ Run FairScreen Analysis
+    </button>
+
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Screening candidates blindly — stripping demographics, scoring merit...</div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <div class="section-divider"></div>
+
+    <!-- Summary -->
+    <div class="summary-bar" id="summaryBar"></div>
+
+    <!-- JD Audit -->
+    <div class="card" id="jdAuditCard">
+      <div class="card-title">📋 JD Bias Audit</div>
+      <div class="card-subtitle">Analysis of your job description for biased language before screening.</div>
+      <div id="jdAuditContent"></div>
+    </div>
+
+    <!-- Candidates -->
+    <div class="card">
+      <div class="card-title">👥 Candidate Rankings</div>
+      <div class="card-subtitle">All candidates screened blindly — no names, gender, or college used in scoring.</div>
+      <div id="candidateList"></div>
+    </div>
+
+    <!-- Proxy Check -->
+    <div class="card" id="proxyCard">
+      <div class="card-title">🔍 Proxy Bias Check</div>
+      <div id="proxyContent"></div>
+    </div>
+
+  </div>
+
+  <footer>
+    FairScreen — Google Solution Challenge 2025 &nbsp;|&nbsp; Unbiased AI Decision Track
+  </footer>
+
+</div>
+
+<script>
+  const API_URL = "http://localhost:8000";
+
+  function handleFiles(input) {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = '';
+    Array.from(input.files).forEach(file => {
+      const chip = document.createElement('div');
+      chip.className = 'file-chip';
+      chip.innerHTML = `<span>📄</span> ${file.name}`;
+      fileList.appendChild(chip);
+    });
+  }
+
+  // Drag and drop
+  const uploadZone = document.getElementById('uploadZone');
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    document.getElementById('resumeFiles').files = e.dataTransfer.files;
+    handleFiles(document.getElementById('resumeFiles'));
+  });
+
+  async function runFairScreen() {
+    const jdText = document.getElementById('jdText').value.trim();
+    const files = document.getElementById('resumeFiles').files;
+
+    if (!jdText) { alert('Please enter a job description.'); return; }
+    if (files.length === 0) { alert('Please upload at least one resume.'); return; }
+
+    // Show loading
+    document.getElementById('inputSection').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('submitBtn').disabled = true;
+
+    try {
+      const formData = new FormData();
+      formData.append('jd_text', jdText);
+      Array.from(files).forEach(f => formData.append('resumes', f));
+
+      const token = await getAuthToken();
+      const response = await fetch(`${API_URL}/screen`, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        alert('Error: ' + data.error);
+        resetUI();
+        return;
+      }
+
+      renderResults(data);
+
+    } catch (err) {
+      alert('Could not connect to FairScreen backend. Make sure api.py is running on port 8000.');
+      resetUI();
+    }
+  }
+
+  function resetUI() {
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+  }
+
+  function renderResults(data) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    // Summary bar
+    const summaryBar = document.getElementById('summaryBar');
+    summaryBar.innerHTML = `
+      <div class="summary-stat">
+        <div class="summary-value">${data.total}</div>
+        <div class="summary-label">Candidates Screened</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-value" style="color:var(--accent)">${data.shortlisted_count}</div>
+        <div class="summary-label">Shortlisted</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-value" style="color:var(--danger)">${data.total - data.shortlisted_count}</div>
+        <div class="summary-label">Not Shortlisted</div>
+      </div>
+    `;
+
+    // JD Audit
+    const jd = data.jd_audit;
+    const scoreClass = jd.bias_score >= 80 ? 'good' : jd.bias_score >= 60 ? 'medium' : 'bad';
+    let issuesHTML = '';
+    if (jd.issues.length > 0) {
+      issuesHTML = jd.issues.map(i => `
+        <div class="issue-item">
+          <span class="issue-type">⚠ ${i.type}</span>
+          <span class="issue-suggestion">'${i.found}' — ${i.suggestion}</span>
+        </div>
+      `).join('');
+    } else {
+      issuesHTML = '<div style="color:var(--accent);font-size:14px">✅ No bias detected in job description.</div>';
+    }
+
+    document.getElementById('jdAuditContent').innerHTML = `
+      <div class="bias-meter">
+        <div class="bias-score ${scoreClass}">${jd.bias_score}</div>
+        <div class="bias-bar-wrap">
+          <div class="bias-label">Bias Score /100 &nbsp;·&nbsp; ${jd.issues_count} issue${jd.issues_count !== 1 ? 's' : ''} found</div>
+          <div class="bias-bar">
+            <div class="bias-fill ${scoreClass}" style="width:${jd.bias_score}%"></div>
+          </div>
+          <div class="bias-label" style="margin-top:6px">Required Skills: ${jd.required_skills.join(', ') || 'None detected'}</div>
+        </div>
+      </div>
+      ${issuesHTML}
+    `;
+
+    // Candidates
+    const candidateList = document.getElementById('candidateList');
+    candidateList.innerHTML = data.candidates.map((c, i) => `
+      <div class="candidate-card ${c.shortlisted ? 'shortlisted' : 'rejected'}" style="animation-delay:${i * 0.1}s">
+        <div class="candidate-header">
+          <div>
+            <div class="candidate-rank">Rank #${i+1}</div>
+            <div class="candidate-id">${c.id} &nbsp;·&nbsp; ${c.filename || 'Resume'} &nbsp;·&nbsp; ${c.candidate_type.charAt(0).toUpperCase() + c.candidate_type.slice(1)}</div>
+          </div>
+          <div class="status-badge ${c.shortlisted ? 'status-shortlisted' : 'status-rejected'}">
+            ${c.shortlisted ? '✓ Shortlisted' : '✗ Not Shortlisted'}
+          </div>
+        </div>
+        <div class="score-grid">
+          <div class="score-box">
+            <div class="score-value">${c.merit_score}</div>
+            <div class="score-label">Merit Score</div>
+          </div>
+          <div class="score-box">
+            <div class="score-value">${c.skill_match_score}%</div>
+            <div class="score-label">Skill Match</div>
+          </div>
+          <div class="score-box">
+            <div class="score-value">${c.project_score}</div>
+            <div class="score-label">Project Score</div>
+          </div>
+          <div class="score-box">
+            <div class="score-value">${c.semantic_score || 'N/A'}%</div>
+            <div class="score-label">Semantic Match</div>
+          </div>
+        </div>
+        <div class="skills-wrap">
+          ${c.skills_found.slice(0, 10).map(s => `<span class="skill-tag">${s}</span>`).join('')}
+        </div>
+        ${c.gap_flag ? `<div class="gap-flag">⚠ ${c.gap_flag}</div>` : ''}
+      </div>
+    `).join('');
+
+    // Proxy check
+    document.getElementById('proxyContent').innerHTML = `
+      <p style="font-size:14px;color:var(--text-dim);line-height:1.7">${data.proxy_check}</p>
+    `;
+
+    // Scroll to results
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+  // Your Firebase config — get from Firebase Console → Project Settings
+  
+  const firebaseConfig = {
+  apiKey: "AIzaSyDbWebJKtR8-VL6-b8mzkBjG4t7-qqwe4k",
+  authDomain: "fairscreen-a2468.firebaseapp.com",
+  projectId: "fairscreen-a2468",
+  storageBucket: "fairscreen-a2468.firebasestorage.app",
+  messagingSenderId: "520678582614",
+  appId: "1:520678582614:web:bab4b5350496cae4c84ef7"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Check if user is logged in
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('inputSection').style.display = 'block';
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('logoutBtn').style.display = 'block';
+    } else {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('inputSection').style.display = 'none';
+    }
+  });
+
+  // Login
+  window.handleLogin = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      document.getElementById('loginError').textContent = 'Invalid email or password.';
+    }
+  };
+
+  // Logout
+  window.handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  // Pass token to API
+  window.getAuthToken = async () => {
+    const user = auth.currentUser;
+    if (user) return await user.getIdToken();
+    return null;
+  };
+</script>
+
+</body>
+</html>

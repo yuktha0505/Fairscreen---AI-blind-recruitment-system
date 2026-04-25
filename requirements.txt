@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pdfplumber
+spacy
+firebase-admin
+python-dotenv
+groq
+sentence-transformers
+rapidfuzz
+python-multipart

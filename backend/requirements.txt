@@ -1,10 +1,11 @@
 fastapi
 uvicorn
+python-multipart
+firebase-admin
 pdfplumber
 spacy
-firebase-admin
-python-dotenv
-groq
 sentence-transformers
 rapidfuzz
-python-multipart
+python-dotenv
+groq
+torch

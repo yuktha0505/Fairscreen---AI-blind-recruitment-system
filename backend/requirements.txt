@@ -4,8 +4,6 @@ python-multipart
 firebase-admin
 pdfplumber
 spacy
-sentence-transformers
 rapidfuzz
 python-dotenv
 groq
-torch

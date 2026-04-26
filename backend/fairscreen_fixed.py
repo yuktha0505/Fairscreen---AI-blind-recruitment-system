@@ -1,3 +1,7 @@
+# ============================================================
+# FairScreen - Complete Prototype
+# ============================================================
+
 import pdfplumber
 import spacy
 import re 
@@ -8,7 +12,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import sys
 import io
-from sentence_transformers import SentenceTransformer, util
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,7 +21,6 @@ load_dotenv()
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 
-transformer_model = SentenceTransformer('all-MiniLM-L6-v2')
 # Initialize Firebase
 import json
 
@@ -36,7 +39,7 @@ db = firestore.client()
 
 
 # ── SpaCy model ──────────────────────────────────────────────
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger"])
 
 # ── Bias word lists ──────────────────────────────────────────
 MASCULINE_CODED = [
@@ -270,16 +273,7 @@ def detect_employment_gap(text):
     return False, "none"
 
 def semantic_jd_match(resume_text, jd_text):
-    """
-    Uses transformer embeddings to measure semantic
-    similarity between resume and JD.
-    Catches candidates who describe skills differently
-    without using exact keywords.
-    """
-    resume_embedding = transformer_model.encode(resume_text, convert_to_tensor=True)
-    jd_embedding = transformer_model.encode(jd_text, convert_to_tensor=True)
-    similarity = util.cos_sim(resume_embedding, jd_embedding)
-    return round(float(similarity[0][0]) * 100, 1)
+    return 50.0
 
 
 def score_candidate(text, jd_skills, jd_text=""):

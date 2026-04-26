@@ -1,13 +1,9 @@
-# ============================================================
-# FairScreen - Complete Prototype
-# ============================================================
-
 import pdfplumber
 import spacy
 import re 
 import os
 from groq import Groq
-groq_client = Groq(api_key="api")
+groq_client = Groq(api_key="GROQ_API_KEY")
 import firebase_admin
 from firebase_admin import credentials, firestore
 import sys
@@ -23,8 +19,17 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 transformer_model = SentenceTransformer('all-MiniLM-L6-v2')
 # Initialize Firebase
-cred = credentials.Certificate(r"C:/Users/yukth/OneDrive/Documents/Desktop/fairscreen/backend/firebase_key.json")
-firebase_admin.initialize_app(cred)
+import json
+
+firebase_key_json = os.getenv("FIREBASE_KEY_JSON")
+if firebase_key_json:
+    cred_dict = json.loads(firebase_key_json)
+    cred = credentials.Certificate(cred_dict)
+else:
+    cred = credentials.Certificate(os.getenv("FIREBASE_KEY_PATH"))
+
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 db = firestore.client()
 # ── Gemini client ────────────────────────────────────────────
 # WARNING: Replace with key. Never share this publicly.

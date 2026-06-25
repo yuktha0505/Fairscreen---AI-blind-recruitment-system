@@ -4,11 +4,8 @@ cat > /mnt/user-data/outputs/README.md << 'EOF'
 ### AI-Powered Blind Recruitment & Bias Auditing System
 > *"FairScreen doesn't find the best candidate. It stops the system from burying them."*
 
-[![Google Solution Challenge 2025](https://img.shields.io/badge/Google%20Solution%20Challenge-2025-4285F4?style=flat&logo=google)](https://developers.google.com/community/gdsc-solution-challenge)
-[![Track](https://img.shields.io/badge/Track-Unbiased%20AI%20Decision-34A853?style=flat)](https://hack2skill.com)
-[![SDG 5](https://img.shields.io/badge/SDG-5%20Gender%20Equality-EA4335?style=flat)](https://sdgs.un.org/goals/goal5)
-[![SDG 8](https://img.shields.io/badge/SDG-8%20Decent%20Work-1A73E8?style=flat)](https://sdgs.un.org/goals/goal8)
-[![SDG 10](https://img.shields.io/badge/SDG-10%20Reduced%20Inequalities-34A853?style=flat)](https://sdgs.un.org/goals/goal10)
+[![Google Solution Challenge 2026](https://img.shields.io/badge/Google%20Solution%20Challenge-2025-4285F4?style=flat&logo=google)](https://developers.google.com/community/gdsc-solution-challenge)
+
 
 ---
 ### 🔑 Demo Login Credentials
@@ -53,7 +50,7 @@ JD Upload → Layer 0: Bias Audit → Resume Upload → Layer 1: Blind Screening
 
 ### Layer 0 — JD Bias Auditor
 - Scans job description for masculine-coded language and exclusionary phrases
-- Gemini rewrites flagged content in real time
+- Groq rewrites flagged content in real time
 - JD version tracking — detects if bias is reintroduced after correction
 - Outputs bias score out of 100
 
@@ -69,7 +66,7 @@ JD Upload → Layer 0: Bias Audit → Resume Upload → Layer 1: Blind Screening
 - Full audit trail maintained
 
 ### Layer 3 — AI Bias Audit Report
-- Groq/Gemini generates plain-English bias report
+- Groq generates plain-English bias report
 - Shows exactly where traditional ATS would have discriminated
 - Candidate feedback report for rejected applicants
 
@@ -248,22 +245,6 @@ Feed 15 diverse resumes into FairScreen:
 
 ---
 
-## 🗺️ Roadmap
-
-### Phase 1 (Current — April 2025)
-- ✅ Working prototype
-- ✅ All 4 layers functional
-- ✅ Firebase integration
-- ✅ AI bias report
-- ✅ Deployed on Google Cloud
-
-### Phase 2 (Post May 2025)
-- 🔲 Flutter mobile app
-- 🔲 Full Google Cloud Run deployment
-- 🔲 Intersectional bias detection
-- 🔲 LinkedIn integration
-- 🔲 Multilingual support (Tamil, Hindi)
-- 🔲 Government hiring body integration
 
 ---
 
@@ -281,7 +262,7 @@ MIT License — feel free to use, modify, and distribute.
 
 ---
 
-*Google Solution Challenge 2025 | Track: Unbiased AI Decision*
+*Google Solution Challenge 2026 | Track: Unbiased AI Decision*
 EOF
 echo "Done"
 
